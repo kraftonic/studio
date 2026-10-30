@@ -1,0 +1,16 @@
+# Build output
+/build/
+/build-*/
+/.deps/
+/out/
+CMakeUserPresets.json
+compile_commands.json
+
+# IDEs and OS
+.vscode/
+.idea/
+.vs/
+*.xcworkspace/
+xcuserdata/
+.DS_Store
+Thumbs.db

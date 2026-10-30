@@ -1,0 +1,79 @@
+{
+ "controls": [
+  {
+   "kind": "knob",
+   "label": "Drive",
+   "param_id": 0,
+   "section": "DRIVE",
+   "tag": "drive"
+  },
+  {
+   "kind": "knob",
+   "label": "Tone",
+   "param_id": 1,
+   "section": "DRIVE",
+   "tag": "tone"
+  },
+  {
+   "kind": "knob",
+   "label": "Time",
+   "param_id": 2,
+   "section": "DELAY",
+   "tag": "delayTime"
+  },
+  {
+   "kind": "knob",
+   "label": "Feedback",
+   "param_id": 3,
+   "section": "DELAY",
+   "tag": "feedback"
+  },
+  {
+   "kind": "knob",
+   "label": "Damping",
+   "param_id": 4,
+   "section": "DELAY",
+   "tag": "damping"
+  },
+  {
+   "kind": "toggle",
+   "label": "Ping-Pong",
+   "param_id": 5,
+   "section": "DELAY",
+   "tag": "pingPong"
+  },
+  {
+   "kind": "knob",
+   "label": "Dry/Wet",
+   "param_id": 6,
+   "section": "MIX",
+   "tag": "mix"
+  },
+  {
+   "kind": "knob",
+   "label": "Output",
+   "param_id": 7,
+   "section": "HEADER",
+   "tag": "outputGain"
+  }
+ ],
+ "extra_tags": {
+  "Preset": 1000
+ },
+ "hidden": [],
+ "params": {
+  "damping": 4,
+  "delayTime": 2,
+  "drive": 0,
+  "feedback": 3,
+  "mix": 6,
+  "outputGain": 7,
+  "pingPong": 5,
+  "tone": 1
+ },
+ "size": [
+  797,
+  200
+ ],
+ "title": "KRAFTONIC STARTER EFFECT"
+}

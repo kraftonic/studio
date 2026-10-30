@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: MIT
+name: Feature request
+description: Suggest an improvement to an existing instrument, effect or the project.
+labels: [enhancement]
+body:
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product
+      options: [Shared modules, Starter templates, Build and tooling, The whole project, Other]
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes:
+      label: What musical or practical problem would this solve?
+    validations: { required: true }
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How it would work for you as a player. Sketches or audio examples are welcome.
+    validations: { required: true }
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or workarounds you've tried
+  - type: checkboxes
+    id: original
+    attributes:
+      label: Originality
+      options:
+        - label: This does not ask Kraftonic to copy another company's samples, presets, firmware, product names or trade dress.
+          required: true

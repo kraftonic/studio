@@ -1,0 +1,216 @@
+[
+ {
+  "name": "knob_led",
+  "folder": "controls/knobs",
+  "type": "filmstrip",
+  "vstgui": "CAnimKnob",
+  "frame_w": 44,
+  "frame_h": 44,
+  "frames": 128,
+  "files": [
+   "controls/knobs/knob_led.png",
+   "controls/knobs/knob_led#2x.png"
+  ],
+  "note": "44 px dark knob, knurled edge, white pointer, 13-LED amber collar."
+ },
+ {
+  "name": "knob_led_bipolar",
+  "folder": "controls/knobs",
+  "type": "filmstrip",
+  "vstgui": "CAnimKnob",
+  "frame_w": 44,
+  "frame_h": 44,
+  "frames": 128,
+  "files": [
+   "controls/knobs/knob_led_bipolar.png",
+   "controls/knobs/knob_led_bipolar#2x.png"
+  ],
+  "note": "44 px LED-collar knob lighting from the centre (+/- amounts)."
+ },
+ {
+  "name": "knob_led_l",
+  "folder": "controls/knobs",
+  "type": "filmstrip",
+  "vstgui": "CAnimKnob",
+  "frame_w": 56,
+  "frame_h": 56,
+  "frames": 128,
+  "files": [
+   "controls/knobs/knob_led_l.png",
+   "controls/knobs/knob_led_l#2x.png"
+  ],
+  "note": "56 px LED-collar knob (the most-played control of a panel)."
+ },
+ {
+  "name": "rotary_5",
+  "folder": "controls/switches",
+  "type": "filmstrip",
+  "vstgui": "CAnimKnob",
+  "frame_w": 46,
+  "frame_h": 46,
+  "frames": 5,
+  "files": [
+   "controls/switches/rotary_5.png",
+   "controls/switches/rotary_5#2x.png"
+  ],
+  "note": "5-position rotary selector; frame i points at position i."
+ },
+ {
+  "name": "rotary_6",
+  "folder": "controls/switches",
+  "type": "filmstrip",
+  "vstgui": "CAnimKnob",
+  "frame_w": 46,
+  "frame_h": 46,
+  "frames": 6,
+  "files": [
+   "controls/switches/rotary_6.png",
+   "controls/switches/rotary_6#2x.png"
+  ],
+  "note": "6-position rotary selector; frame i points at position i."
+ },
+ {
+  "name": "led_select_2",
+  "folder": "controls/switches",
+  "type": "filmstrip",
+  "vstgui": "CVerticalSwitch",
+  "frame_w": 14,
+  "frame_h": 32,
+  "frames": 2,
+  "files": [
+   "controls/switches/led_select_2.png",
+   "controls/switches/led_select_2#2x.png"
+  ],
+  "note": "2 stacked LEDs 16 px apart; frame i lights LED i."
+ },
+ {
+  "name": "led_select_3",
+  "folder": "controls/switches",
+  "type": "filmstrip",
+  "vstgui": "CVerticalSwitch",
+  "frame_w": 14,
+  "frame_h": 48,
+  "frames": 3,
+  "files": [
+   "controls/switches/led_select_3.png",
+   "controls/switches/led_select_3#2x.png"
+  ],
+  "note": "3 stacked LEDs 16 px apart; frame i lights LED i."
+ },
+ {
+  "name": "btn_led",
+  "folder": "controls/buttons",
+  "type": "filmstrip",
+  "vstgui": "COnOffButton",
+  "frame_w": 46,
+  "frame_h": 22,
+  "frames": 2,
+  "files": [
+   "controls/buttons/btn_led.png",
+   "controls/buttons/btn_led#2x.png"
+  ],
+  "note": "Rubber cap button with LED: frame 0 off, frame 1 on."
+ },
+ {
+  "name": "led_toggle",
+  "folder": "controls/buttons",
+  "type": "filmstrip",
+  "vstgui": "COnOffButton",
+  "frame_w": 14,
+  "frame_h": 14,
+  "frames": 2,
+  "files": [
+   "controls/buttons/led_toggle.png",
+   "controls/buttons/led_toggle#2x.png"
+  ],
+  "note": "LED-only toggle: frame 0 off, frame 1 on."
+ },
+ {
+  "name": "btn_prev",
+  "folder": "controls/buttons",
+  "type": "filmstrip",
+  "vstgui": "COnOffButton",
+  "frame_w": 34,
+  "frame_h": 28,
+  "frames": 2,
+  "files": [
+   "controls/buttons/btn_prev.png",
+   "controls/buttons/btn_prev#2x.png"
+  ],
+  "note": "Rubber prev button: frame 0 up, frame 1 down."
+ },
+ {
+  "name": "btn_next",
+  "folder": "controls/buttons",
+  "type": "filmstrip",
+  "vstgui": "COnOffButton",
+  "frame_w": 34,
+  "frame_h": 28,
+  "frames": 2,
+  "files": [
+   "controls/buttons/btn_next.png",
+   "controls/buttons/btn_next#2x.png"
+  ],
+  "note": "Rubber next button: frame 0 up, frame 1 down."
+ },
+ {
+  "name": "panel_section",
+  "folder": "materials/nine",
+  "type": "nine-part",
+  "vstgui": "CNinePartTiledBitmap",
+  "frame_w": 48,
+  "frame_h": 52,
+  "frames": 1,
+  "files": [
+   "materials/nine/panel_section.png",
+   "materials/nine/panel_section#2x.png"
+  ],
+  "note": "Section panel with its 26 px header strip.",
+  "nine": [
+   12,
+   28,
+   12,
+   12
+  ]
+ },
+ {
+  "name": "header_panel",
+  "folder": "materials/nine",
+  "type": "nine-part",
+  "vstgui": "CNinePartTiledBitmap",
+  "frame_w": 48,
+  "frame_h": 56,
+  "frames": 1,
+  "files": [
+   "materials/nine/header_panel.png",
+   "materials/nine/header_panel#2x.png"
+  ],
+  "note": "Header bar (56 px tall, stretches horizontally).",
+  "nine": [
+   12,
+   27,
+   12,
+   28
+  ]
+ },
+ {
+  "name": "oled",
+  "folder": "materials/nine",
+  "type": "nine-part",
+  "vstgui": "CNinePartTiledBitmap",
+  "frame_w": 16,
+  "frame_h": 16,
+  "frames": 1,
+  "files": [
+   "materials/nine/oled.png",
+   "materials/nine/oled#2x.png"
+  ],
+  "note": "OLED glass behind menus and value fields.",
+  "nine": [
+   6,
+   6,
+   6,
+   6
+  ]
+ }
+]

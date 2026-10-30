@@ -1,0 +1,254 @@
+# SPDX-License-Identifier: MIT
+#
+# Native builds on macOS, Windows and Linux: unit tests (ctest), every VST3
+# and CLAP plug-in, Steinberg validator + pluginval on EVERY built bundle,
+# clap-validator on every CLAP plug-in, auval on every Audio Unit (macOS),
+# and the per-OS installer (unsigned). A platform is supported only when green here.
+name: Build
+
+# Runs on every pull request into main (all three platforms; Actions is free
+# for public repositories) or by hand.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Which platforms to build"
+        type: choice
+        options: [windows, windows+linux, all]
+        default: windows
+permissions:
+  contents: read
+
+concurrency:
+  # "build-" keeps this group distinct from a calling workflow's own group.
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+
+env:
+  PLUGINVAL_VERSION: v1.0.4
+
+jobs:
+  lint:
+    name: Lint workflows and scripts
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: actionlint (includes shellcheck of run blocks)
+        run: docker run --rm -v "$PWD:/repo:ro" -w /repo rhysd/actionlint:1.7.12 -no-color
+      - name: shellcheck scripts
+        run: |
+          docker run --rm -v "$PWD:/mnt:ro" -w /mnt koalaman/shellcheck:v0.11.0 -x -s bash \
+            packaging/common.sh packaging/macos/*.sh packaging/windows/*.sh packaging/linux/build-tarball.sh \
+            scripts/*.sh scripts/ci/*.sh
+          docker run --rm -v "$PWD:/mnt:ro" -w /mnt koalaman/shellcheck:v0.11.0 -s sh packaging/linux/install.sh
+  platforms:
+    name: Pick platforms
+    runs-on: ubuntu-24.04
+    outputs:
+      matrix: ${{ steps.pick.outputs.matrix }}
+    steps:
+      - id: pick
+        env:
+          PLATFORMS: ${{ inputs.platforms }}
+          ALL: '[{"name": "macOS (universal)", "os": "macos-latest", "generator": "-G Ninja \"-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64\"", "pluginval_zip": "pluginval_macOS.zip", "pluginval_bin": "pluginval.app/Contents/MacOS/pluginval", "key": "macos"}, {"name": "Windows (x64)", "os": "windows-latest", "generator": "", "pluginval_zip": "pluginval_Windows.zip", "pluginval_bin": "pluginval.exe", "key": "windows"}, {"name": "Linux (x64)", "os": "ubuntu-24.04", "generator": "-G Ninja", "pluginval_zip": "pluginval_Linux.zip", "pluginval_bin": "pluginval", "key": "linux"}]'
+        run: |
+          case "${PLATFORMS:-all}" in
+            windows)       want='["windows"]' ;;
+            windows+linux) want='["windows","linux"]' ;;
+            *)             want='["windows","linux","macos"]' ;;
+          esac
+          matrix=$(jq -c --argjson want "$want" '{include: [.[] | select(.key as $k | $want | index($k))]}' <<< "$ALL")
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "Building: $want"
+
+  build:
+    name: ${{ matrix.name }}
+    needs: platforms
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.platforms.outputs.matrix) }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          read -r -a deps <<< "$(tr '\n' ' ' < scripts/linux-dependencies.txt)"
+          sudo apt-get install -y ninja-build xvfb "${deps[@]}"
+
+      - name: Install Ninja (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ninja
+
+      - name: Cache dependencies
+        uses: actions/cache@v6
+        with:
+          path: .deps
+          key: deps-${{ runner.os }}-${{ hashFiles('cmake/KraftonicDependencies.cmake') }}
+
+      - name: Version
+        id: version
+        run: |
+          version="$(cmake -P cmake/KraftonicPrintVersion.cmake | tr -d '\r')"
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::bad version '$version'"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Version $version"
+
+      - name: Configure
+        run: |
+          mkdir -p logs
+          cmake -S . -B build ${{ matrix.generator }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DFETCHCONTENT_BASE_DIR="$GITHUB_WORKSPACE/.deps" \
+            -DKRAFTONIC_WARNINGS_AS_ERRORS=ON 2>&1 | tee logs/configure.log
+
+      - name: Build
+        run: |
+          set -o pipefail
+          cmake --build build --config Release --parallel 2>&1 | tee logs/build.log
+
+      - name: Unit tests
+        # Test names are prefixed by owner ("core:", "fx:", "formats:", "startersynth:");
+        # the summary step counts them per owner.
+        run: |
+          set -o pipefail
+          ctest --test-dir build -C Release --output-on-failure 2>&1 | tee logs/ctest.log
+
+      - name: Locate plug-ins and tools
+        run: |
+          source packaging/common.sh
+          validator=$(find build/bin -type f \( -name validator -o -name validator.exe \) | head -1)
+          # All products' bundles land in one folder (build/VST3/Release); find it from any bundle.
+          first=$(kraftonic_find_bundles build/VST3 | head -1)
+          vst3_dir=""
+          [ -n "$first" ] && vst3_dir=$(dirname "$first")
+          count=0
+          [ -n "$vst3_dir" ] && count=$(kraftonic_find_bundles "$vst3_dir" | wc -l | tr -d ' ')
+          {
+            echo "VST3_DIR=$vst3_dir"
+            echo "PLUGIN_COUNT=$count"
+            echo "VST3_VALIDATOR=$validator"
+          } >> "$GITHUB_ENV"
+          echo "validator: $validator"
+          echo "plug-ins ($count) in ${vst3_dir:-<none yet>}:"
+          [ -n "$vst3_dir" ] && kraftonic_find_bundles "$vst3_dir"
+          test -n "$validator"
+
+      - name: Download pluginval
+        if: env.PLUGIN_COUNT != '0'
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/pluginval.zip" \
+            "https://github.com/Tracktion/pluginval/releases/download/$PLUGINVAL_VERSION/${{ matrix.pluginval_zip }}"
+          unzip -q "$RUNNER_TEMP/pluginval.zip" -d "$RUNNER_TEMP/pluginval"
+          echo "PLUGINVAL=$RUNNER_TEMP/pluginval/${{ matrix.pluginval_bin }}" >> "$GITHUB_ENV"
+
+      - name: Validate every plug-in (Steinberg validator + pluginval)
+        if: env.PLUGIN_COUNT != '0'
+        # Per-OS flags (Linux: xvfb, --skip-gui-tests, no --vst3validator) live in
+        # the script; docs/KNOWN_ISSUES.md explains why.
+        run: scripts/ci/validate-plugins.sh "$VST3_DIR" "$VST3_VALIDATOR" logs "$PLUGINVAL"
+
+      - name: Validate every CLAP plug-in (clap-validator)
+        if: env.PLUGIN_COUNT != '0'
+        run: |
+          set -o pipefail
+          claps=()
+          while IFS= read -r c; do claps+=("$c"); done < <(find "$VST3_DIR" -maxdepth 1 -name '*.clap' ! -name '*SelfTest*' | LC_ALL=C sort)
+          [ ${#claps[@]} -gt 0 ] || { echo "::error::no .clap plug-ins in $VST3_DIR"; exit 1; }
+          scripts/ci/clap-validator.sh logs "${claps[@]}" 2>&1 | tee logs/clap-validator.log
+
+      - name: Validate every Audio Unit (auval, macOS)
+        if: runner.os == 'macOS' && env.PLUGIN_COUNT != '0'
+        run: |
+          set -o pipefail
+          scripts/ci/auval.sh logs "$VST3_DIR"/*.component 2>&1 | tee logs/auval.log
+
+      - name: Upload VST3 bundles
+        if: env.PLUGIN_COUNT != '0'
+        uses: actions/upload-artifact@v7
+        with:
+          name: KraftonicStudio-VST3-${{ runner.os }}
+          path: ${{ env.VST3_DIR }}/*.vst3
+          if-no-files-found: error
+
+      - name: Upload CLAP plug-ins
+        if: env.PLUGIN_COUNT != '0'
+        uses: actions/upload-artifact@v7
+        with:
+          name: KraftonicStudio-CLAP-${{ runner.os }}
+          path: ${{ env.VST3_DIR }}/*.clap
+          if-no-files-found: error
+
+      # ------------------------------------------------------------- installers
+      - name: Installer (macOS .pkg)
+        if: runner.os == 'macOS' && env.PLUGIN_COUNT != '0'
+        run: |
+          set -o pipefail
+          packaging/macos/build-pkg.sh "$VST3_DIR" dist "${{ steps.version.outputs.version }}" 2>&1 | tee logs/installer.log
+          echo "Payload:"; pkgutil --payload-files dist/*.pkg | tee -a logs/installer.log
+
+      - name: Install Inno Setup (Windows, if missing)
+        if: runner.os == 'Windows' && env.PLUGIN_COUNT != '0'
+        # Preinstalled on windows-latest (Windows Server 2025 image lists InnoSetup 6.7.1,
+        # 2026-10); choco is the fallback if an image drops it.
+        run: |
+          if [ -x "/c/Program Files (x86)/Inno Setup 6/ISCC.exe" ] || command -v iscc > /dev/null; then
+            echo "Inno Setup already installed"
+          else
+            choco install innosetup -y --no-progress
+          fi
+
+      - name: Installer (Windows Inno Setup .exe)
+        if: runner.os == 'Windows' && env.PLUGIN_COUNT != '0'
+        run: |
+          set -o pipefail
+          packaging/windows/build-installer.sh "$VST3_DIR" dist "${{ steps.version.outputs.version }}" 2>&1 | tee logs/installer.log
+
+      - name: Installer (Linux .tar.gz)
+        if: runner.os == 'Linux' && env.PLUGIN_COUNT != '0'
+        run: |
+          set -o pipefail
+          packaging/linux/build-tarball.sh "$VST3_DIR" dist "${{ steps.version.outputs.version }}" 2>&1 | tee logs/installer.log
+          # Smoke test: unpack, install into a throwaway HOME, uninstall again.
+          t="$RUNNER_TEMP/tarball-test"; mkdir -p "$t/home"
+          tar -xzf dist/*.tar.gz -C "$t"
+          installer=$(find "$t" -maxdepth 2 -name install.sh | head -1)
+          HOME="$t/home" "$installer"
+          # shellcheck source=packaging/common.sh
+          . packaging/common.sh
+          while IFS= read -r b; do
+            test -d "$t/home/.vst3/$(basename "$b")"
+            if [ -f "${b%.vst3}.clap" ]; then test -f "$t/home/.clap/$(basename "$b" .vst3).clap"; fi
+          done < <(kraftonic_find_bundles "$VST3_DIR")
+          HOME="$t/home" "$installer" --uninstall
+          test -z "$(ls -A "$t/home/.vst3")"
+          test -z "$(ls -A "$t/home/.clap" 2> /dev/null)"
+          echo "install.sh smoke test OK" | tee -a logs/installer.log
+
+      - name: Upload installer
+        if: env.PLUGIN_COUNT != '0'
+        uses: actions/upload-artifact@v7
+        with:
+          name: installer-${{ runner.os }}
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Summary
+        if: always()
+        run: scripts/ci/summarize.sh logs dist "${{ matrix.name }}"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-${{ runner.os }}
+          path: logs
+          if-no-files-found: ignore

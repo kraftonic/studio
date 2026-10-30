@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: MIT -->
+<!-- Minimal stock-VSTGUI editor for the shared adapter self-test. -->
+<vstgui-ui-description version="1">
+	<control-tags>
+		<control-tag name="outputGain" tag="0"/>
+		<control-tag name="wave" tag="1"/>
+		<control-tag name="attack" tag="2"/>
+	</control-tags>
+	<template name="view" size="360, 120" class="CViewContainer">
+		<view class="CTextEdit" origin="12, 20" size="100, 24" control-tag="outputGain" min-value="0" max-value="1"/>
+		<view class="CTextEdit" origin="130, 20" size="100, 24" control-tag="wave" min-value="0" max-value="1"/>
+		<view class="CTextEdit" origin="248, 20" size="100, 24" control-tag="attack" min-value="0" max-value="1"/>
+	</template>
+	<custom>
+		<attributes name="UIAttributesController"/>
+		<attributes SelectedTemplate="view" name="UITemplateController"/>
+	</custom>
+</vstgui-ui-description>

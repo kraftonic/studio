@@ -1,0 +1,77 @@
+# SPDX-License-Identifier: MIT
+name: Bug report
+description: Something sounds wrong, crashes, misbehaves in a host, or doesn't build.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report this. One problem per issue, please.
+        Security problems go to [SECURITY.md](https://github.com/kraftonic/studio/blob/HEAD/SECURITY.md), not here.
+  - type: dropdown
+    id: product
+    attributes:
+      label: Product
+      options:
+        [
+          Shared modules,
+          Kraftonic Starter Synth,
+          Kraftonic Starter Effect,
+          Installer or packaging,
+          Building from source,
+          Other,
+        ]
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Shown on the plug-in panel, or `git rev-parse --short HEAD` if you built it yourself.
+      placeholder: "0.1.0 / abc1234"
+    validations: { required: true }
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [Windows, macOS, Linux]
+    validations: { required: true }
+  - type: input
+    id: os-version
+    attributes:
+      label: OS version and CPU
+      placeholder: "macOS 15.1 on Apple silicon / Windows 11 x64 / Ubuntu 24.04 x64"
+  - type: input
+    id: host
+    attributes:
+      label: Host / DAW and version
+      placeholder: "REAPER 7.x, Bitwig Studio 5.x, ..."
+  - type: input
+    id: audio-settings
+    attributes:
+      label: Sample rate and buffer size
+      placeholder: "48 kHz, 256 samples"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: The smallest set of steps that shows the problem. Name the preset if one is involved.
+      placeholder: |
+        1. Load Kraftonic Starter Synth on a new instrument track
+        2. Choose preset ...
+        3. Play ...
+    validations: { required: true }
+  - type: textarea
+    id: result
+    attributes:
+      label: What happened, and what you expected
+    validations: { required: true }
+  - type: textarea
+    id: media
+    attributes:
+      label: Audio, screenshots or video
+      description: Drag files in here. A short audio clip helps a lot with anything that sounds wrong.
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or crash report
+      render: text

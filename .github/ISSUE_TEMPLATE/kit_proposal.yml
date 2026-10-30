@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: MIT
+name: Module or kit feature proposal
+description: Propose a new shared module, DSP block, UI kit control or tool for the kit.
+labels: [proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Studio is a kit: plug-ins live in their own repositories and build on it. New modules and
+        larger kit features change the architecture, so they start as a proposal and, if accepted,
+        a short design note in the issue. Please read the "Architecture rules" section of
+        [AGENTS.md](https://github.com/kraftonic/studio/blob/HEAD/AGENTS.md#architecture-rules) and
+        [docs/ARCHITECTURE.md](https://github.com/kraftonic/studio/blob/HEAD/docs/ARCHITECTURE.md) first.
+        Quality and stability of the existing modules come before new ones.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you proposing?
+      options: [A new module, A DSP block in an existing module, A UI kit control, A build or test tool, Other]
+    validations: { required: true }
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What it is and which plug-ins would use it.
+    validations: { required: true }
+  - type: textarea
+    id: gap
+    attributes:
+      label: Why the kit needs it
+      description: What can't be done with the current modules, and why it belongs in the kit rather than in one plug-in.
+    validations: { required: true }
+  - type: textarea
+    id: design
+    attributes:
+      label: Sketch of the design
+      description: Interface, real-time behaviour, and which existing modules (core, fx, sampler, synth, plugin, ui) it builds on.
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Checks
+      options:
+        - label: I have read the "Architecture rules" section of AGENTS.md.
+          required: true
+        - label: The design is original and does not copy another company's product, names or trade dress.
+          required: true
+        - label: I'm willing to help build or test it.

@@ -1,0 +1,119 @@
+{
+ "controls": [
+  {
+   "kind": "select",
+   "label": "Osc 1",
+   "param_id": 0,
+   "section": "OSCILLATORS",
+   "tag": "osc1Wave"
+  },
+  {
+   "kind": "select",
+   "label": "Osc 2",
+   "param_id": 1,
+   "section": "OSCILLATORS",
+   "tag": "osc2Wave"
+  },
+  {
+   "kind": "knob",
+   "label": "Detune",
+   "param_id": 2,
+   "section": "OSCILLATORS",
+   "tag": "osc2Detune"
+  },
+  {
+   "kind": "knob",
+   "label": "Mix",
+   "param_id": 3,
+   "section": "OSCILLATORS",
+   "tag": "oscMix"
+  },
+  {
+   "kind": "knob",
+   "label": "Cutoff",
+   "param_id": 4,
+   "section": "FILTER",
+   "tag": "cutoff"
+  },
+  {
+   "kind": "knob",
+   "label": "Reso",
+   "param_id": 5,
+   "section": "FILTER",
+   "tag": "resonance"
+  },
+  {
+   "kind": "knob",
+   "label": "Env Amt",
+   "param_id": 6,
+   "section": "FILTER",
+   "tag": "envAmount"
+  },
+  {
+   "kind": "knob",
+   "label": "Attack",
+   "param_id": 7,
+   "section": "ENVELOPE",
+   "tag": "attack"
+  },
+  {
+   "kind": "knob",
+   "label": "Decay",
+   "param_id": 8,
+   "section": "ENVELOPE",
+   "tag": "decay"
+  },
+  {
+   "kind": "knob",
+   "label": "Sustain",
+   "param_id": 9,
+   "section": "ENVELOPE",
+   "tag": "sustain"
+  },
+  {
+   "kind": "knob",
+   "label": "Release",
+   "param_id": 10,
+   "section": "ENVELOPE",
+   "tag": "release"
+  },
+  {
+   "kind": "knob",
+   "label": "Glide",
+   "param_id": 11,
+   "section": "VOICE",
+   "tag": "glide"
+  },
+  {
+   "kind": "knob",
+   "label": "Output",
+   "param_id": 12,
+   "section": "HEADER",
+   "tag": "outputGain"
+  }
+ ],
+ "extra_tags": {
+  "Preset": 1000
+ },
+ "hidden": [],
+ "params": {
+  "attack": 7,
+  "cutoff": 4,
+  "decay": 8,
+  "envAmount": 6,
+  "glide": 11,
+  "osc1Wave": 0,
+  "osc2Detune": 2,
+  "osc2Wave": 1,
+  "oscMix": 3,
+  "outputGain": 12,
+  "release": 10,
+  "resonance": 5,
+  "sustain": 9
+ },
+ "size": [
+  791,
+  320
+ ],
+ "title": "KRAFTONIC STARTER SYNTH"
+}

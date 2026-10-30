@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: MIT
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/kraftonic/studio/blob/HEAD/SECURITY.md
+    about: Please report security issues privately by email, never in a public issue.
+  - name: Questions and help
+    url: https://github.com/kraftonic/studio/discussions
+    about: Ask about building with or using Kraftonic Studio.
