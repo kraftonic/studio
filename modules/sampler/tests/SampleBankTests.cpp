@@ -268,7 +268,7 @@ TEST_CASE ("a sampler with a missing bank stays silent and safe", "[robustness]"
 
 TEST_CASE ("sample locations: environment override and platform default", "[locations]")
 {
-    constexpr const char* variable = "KRAFTONIC_TEST_SAMPLES";
+    [[maybe_unused]] constexpr const char* variable = "KRAFTONIC_TEST_SAMPLES"; // unused on Windows
     const std::string fallback = platformDefaultSampleDirectory ("Vendor", "My Synth");
     CHECK_FALSE (fallback.empty());
 #if defined(__APPLE__)

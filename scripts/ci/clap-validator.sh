@@ -52,9 +52,12 @@ if [ -z "$VALIDATOR" ]; then
         if [ "$asset" = windows ]; then
             mv "$dir/unpacked/clap-validator.exe" "$VALIDATOR"
         else
-            # The zip holds a tarball with binaries/clap-validator.
+            # The zip holds a tarball with clap-validator at its top level (Linux)
+            # or under binaries/ (macOS).
             tar -xzf "$dir"/unpacked/*.tar.gz -C "$dir/unpacked" || { echo "FAIL: clap-validator untar"; exit 1; }
-            mv "$dir/unpacked/binaries/clap-validator" "$VALIDATOR"
+            found="$(find "$dir/unpacked" -type f -name clap-validator | head -n 1)"
+            [ -n "$found" ] || { echo "FAIL: clap-validator not found in the download"; exit 1; }
+            mv "$found" "$VALIDATOR"
         fi
         rm -rf "$zip" "$dir/unpacked"
         chmod +x "$VALIDATOR"
