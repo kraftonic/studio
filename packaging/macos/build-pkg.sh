@@ -158,7 +158,8 @@ sed -e "s|@VERSION@|$VERSION|g" -e "s|@PRODUCTS@|$product_list|" -e "s|@UNSIGNED
 # the full third-party licence texts.
 SDK_DIR="${KRAFTONIC_VST3SDK_DIR:-}"
 if [ -z "$SDK_DIR" ]; then
-    for d in "$HOME/.cache/kraftonic/sdk381/vst3sdk" "$KRAFTONIC_ROOT/build/_deps/vst3sdk-src"; do
+    for d in "$HOME/.cache/kraftonic/sdk381/vst3sdk" "$KRAFTONIC_ROOT/.deps/vst3sdk-src" \
+        "$KRAFTONIC_ROOT/build/_deps/vst3sdk-src"; do
         [ -f "$d/LICENSE.txt" ] && { SDK_DIR="$d"; break; }
     done
 fi

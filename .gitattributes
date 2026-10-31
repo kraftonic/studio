@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Keep LF line endings, even in a Windows checkout: shell scripts must run,
+# and the generated panel files are compared byte for byte with fresh output.
+*.sh text eol=lf
+*.uidesc text eol=lf
+*.panel.json text eol=lf
