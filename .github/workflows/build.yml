@@ -6,11 +6,13 @@
 # and the per-OS installer (unsigned). A platform is supported only when green here.
 name: Build
 
-# Runs on every pull request into develop (all three platforms; Actions is free
-# for public repositories) or by hand.
+# Runs on every pull request into main and every push to main (all three
+# platforms; Actions is free for public repositories) or by hand.
 on:
   pull_request:
-    branches: [develop]
+    branches: [main]
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       platforms:
